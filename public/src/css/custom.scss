@@ -1,0 +1,10 @@
+// 1. Sobrescribe la variable antes de importar Bootstrap
+$light: #d1e7dd; // <-- Cambia este color al que quieras
+
+// 2. Importa Bootstrap
+@import "node_modules/bootstrap/scss/bootstrap";
+
+// 3. (Opcional) Ajustes adicionales específicos
+.bg-light {
+  background-color: $light !important;
+}

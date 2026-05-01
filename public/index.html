@@ -1,0 +1,524 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario de Farmacia</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Hairline&display=swap" rel="stylesheet">
+
+    <!-- Estilos -->
+    <link href="/src/css/styles.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+      <!-- =========================
+        LOGIN
+    ========================= -->
+    <div id="loginScreen" class="position-fixed top-0 start-0 w-100 vh-100 bg-light d-flex justify-content-center align-items-center" style="z-index:9999;">
+
+        <div class="card p-4 shadow" style="width: 350px;">
+            <h4 class="mb-3 text-center">Iniciar Sesión</h4>
+
+            <form id="loginForm">
+                <input type="text" id="usuario" class="form-control mb-2" placeholder="Usuario" required>
+                <input type="password" id="password" class="form-control mb-3" placeholder="Contraseña" required>
+
+                <button class="btn btn-primary w-100">Entrar</button>
+            </form>
+
+            <p id="loginError" class="text-danger mt-2 text-center d-none">
+                Credenciales incorrectas
+            </p>
+        </div>
+
+    </div>
+        
+    <!-- =========================
+        HEADER / NAVBAR
+    ========================= -->
+    <header id="appHeader">
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                    <img src="/src/img/logo.png" width="60" height="48" alt="Logo">
+                    <span>Farmacia</span>
+                </a>
+            </div>
+            <button onclick="logout()" class="btn btn-danger btn-sm">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <!-- =========================
+        PESTAÑAS
+    ========================= -->
+    <main id="appContent" class="container-fluid mt-3">
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#rventa">
+                    Realizar Venta
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#consulta">
+                    Consultar Inventario
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#actualizar">
+                    Actualizar Inventario
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ventas">
+                    Ventas
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#empleados">
+                    Empleados
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+
+            <!-- =========================
+                PESTAÑA PARA REALIZAR VENTA
+            ========================= -->
+            <section class="tab-pane fade show active" id="rventa">
+
+                <h3 class="mb-3">Realizar Venta</h3>
+
+                <div class="row">
+
+                    <!-- =========================
+                        LISTA DE PRODUCTOS
+                    ========================= -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h5 class="mb-3">Seleccionar Productos</h5>
+
+                                <!-- Buscador 
+                                <input type="text" id="buscadorVenta" class="form-control mb-3"
+                                    placeholder="Buscar producto..."> -->
+
+                                <!-- Tabla productos -->
+                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Precio</th>
+                                                <th>Stock</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tablaProductosVenta">
+                                            <!-- JS inserta productos -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- =========================
+                        CARRITO DE COMPRA
+                    ========================= -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h5 class="mb-3">Carrito</h5>
+
+                                <!-- Empleado -->
+                                <div class="mb-3">
+                                    <label class="form-label">Empleado</label>
+                                    <select id="empleadoVenta" class="form-control">
+                                        <!-- JS carga empleados -->
+                                    </select>
+                                </div>
+
+                                <!-- Tabla carrito -->
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Cant.</th>
+                                                <th>Precio</th>
+                                                <th>Subtotal</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tablaCarrito">
+                                            <!-- JS inserta productos -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Total -->
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <h5>Total:</h5>
+                                    <h4 id="totalVentaActual">$0.00</h4>
+                                </div>
+
+                                <!-- Fecha (automática) -->
+                                <input type="hidden" id="fechaVenta">
+
+                                <!-- Botones -->
+                                <div class="d-grid gap-2 mt-3">
+                                    <button id="btnFinalizarVenta" class="btn btn-success">
+                                        Finalizar Venta
+                                    </button>
+
+                                    <button id="btnCancelarVenta" class="btn btn-secondary">
+                                        Cancelar
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- =========================
+                PESTAÑA DE CONSULTA
+            ========================= -->
+            <section class="tab-pane fade" id="consulta">
+
+                <h3 class="mb-3">Consulta de Medicamentos</h3>
+
+                <!-- Filtros -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="mb-3">Filtrar</h5>
+
+                        <!-- Buscador -->
+                        <input type="text" id="buscador" class="form-control mb-3"
+                            placeholder="Buscar por nombre...">
+
+                        <!-- Rango + stock -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-3">
+                                <input type="number" id="precioMin" class="form-control"
+                                    placeholder="Precio mínimo" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" id="precioMax" class="form-control"
+                                    placeholder="Precio máximo" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <select id="stockFiltro" class="form-control">
+                                    <option value="">Todos</option>
+                                    <option value="disponible">Con stock</option>
+                                    <option value="agotado">Sin stock</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="ordenar" class="form-control">
+                                    <option value="" disabled selected hidden>Ordenar por...</option>
+                                    <option value="nombreAz">Nombre (A-Z)</option>
+                                    <option value="nombreZa">Nombre (Z-A)</option>
+                                    <option value="id">ID</option>
+                                    <option value="precioAsc">Precio ↑</option>
+                                    <option value="precioDesc">Precio ↓</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="resetFiltros" class="btn btn-secondary">
+                            Limpiar filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaConsulta"></tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- =========================
+                PESTAÑA ACTUALIZAR INVENTARIO
+            ========================= -->
+            <section class="tab-pane fade" id="actualizar">
+
+                <h3 class="mb-3">Gestión de Inventario</h3>
+
+                <!-- Formulario -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Agregar Producto</h5>
+
+                        <form id="formProducto">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" id="nombre" class="form-control"
+                                        placeholder="Nombre" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" id="precio" class="form-control"
+                                        placeholder="Precio" min="0" step="0.01" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" id="stock" class="form-control"
+                                        placeholder="Stock" min="0" required>
+                                </div>
+                                <div class="col-md-2 d-grid">
+                                    <button class="btn btn-primary">Guardar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="mb-3">Filtrar</h5>
+
+                        <input type="text" id="buscador2" class="form-control mb-3"
+                            placeholder="Buscar por nombre...">
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-3">
+                                <input type="number" id="precioMin2" class="form-control"
+                                    placeholder="Precio mínimo" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" id="precioMax2" class="form-control"
+                                    placeholder="Precio máximo" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <select id="stockFiltro2" class="form-control">
+                                    <option value="">Todos</option>
+                                    <option value="disponible">Con stock</option>
+                                    <option value="agotado">Sin stock</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="ordenar2" class="form-control">
+                                    <option value="" disabled selected hidden>Ordenar por...</option>
+                                    <option value="nombreAz">Nombre (A-Z)</option>
+                                    <option value="nombreZa">Nombre (Z-A)</option>
+                                    <option value="id">ID</option>
+                                    <option value="precioAsc">Precio ↑</option>
+                                    <option value="precioDesc">Precio ↓</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="resetFiltros2" class="btn btn-secondary">
+                            Limpiar filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="mb-3">Lista de Productos</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- =========================
+                PESTAÑA VENTAS
+            ========================= -->
+            <section class="tab-pane fade" id="ventas">
+
+                <h3 class="mb-3">Historial de Ventas</h3>
+
+                <div class="row">
+
+                    <!-- TABLA DE VENTAS -->
+                    <div class="col-md-7">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="mb-3">Ventas realizadas</h5>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID Venta</th>
+                                                <th>Fecha</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tablaVentas"></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DETALLE DE VENTA -->
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h5 class="mb-3">Detalle de Venta</h5>
+
+                                <!-- Info general -->
+                                <div id="detalleVentaInfo" class="mb-3">
+                                    <p class="text-muted">Selecciona una venta...</p>
+                                </div>
+
+                                <!-- Productos -->
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio Unitario</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tablaDetalleVenta"></tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Total -->
+                                <div class="mt-3 text-end">
+                                    <strong id="totalVenta">$0.00</strong>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+            
+            <!-- =========================
+                PESTAÑA EMPLEADOS
+            ========================= -->
+            <section class="tab-pane fade" id="empleados">
+
+                <h3 class="mb-3">Gestión de Empleados</h3>
+
+                <!-- Formulario -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Agregar Empleado</h5>
+
+                        <form id="formEmpleado">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" id="nombreEmpleado" class="form-control"
+                                        placeholder="Nombre" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" id="apellidosEmpleado" class="form-control"
+                                        placeholder="Apellidos" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="turnoEmpleado" class="form-control">
+                                        <option value="Matutino">Matutino</option>
+                                        <option value="Vespertino">Vespertino</option>
+                                        <option value="Nocturno">Nocturno</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" id="rfcEmpleado" class="form-control"
+                                        placeholder="RFC" mingleght="13" maxlength="13" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="tel" id="telefonoEmpleado" class="form-control"
+                                        placeholder="Número de teléfono" mingleght="10" maxlength="10" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="puestoEmpleado" class="form-control">
+                                        <option value="Cajero">Cajero</option>
+                                        <option value="Almacen">Almacen</option>
+                                        <option value="Supervisor">Supervisor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-grid">
+                                    <button class="btn btn-primary">Guardar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tabla -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="mb-3">Lista de Productos</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Apellidos</th>
+                                        <th>Turno</th>
+                                        <th>RFC</th>
+                                        <th>Teléfono</th>
+                                        <th>Puesto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaEmpleados"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+<!-- Scripts -->
+<script type="module" src="/src/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
