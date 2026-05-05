@@ -18,3 +18,76 @@ body {
     font-family: 'Bungee Hairline', sans-serif;
     font-weight: 600;
 }
+
+/*Chat*/
+
+#chatToggle:hover {
+    transform: scale(1.1);
+}
+
+#chatToggle {
+    transition: transform 0.2s ease;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 20px;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+}
+
+#chatBox {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.chat-header {
+    background: #0d6efd;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+#chatMessages {
+    height: 220px;
+    overflow-y: auto;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.chat-input {
+    border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+    width: 100%;
+    border: none;
+    padding: 10px;
+    outline: none;
+}
+
+.msg-user {
+    text-align: right;
+    margin-bottom: 5px;
+}
+
+.msg-bot {
+    text-align: left;
+    margin-bottom: 5px;
+    color: #555;
+}

@@ -728,3 +728,47 @@ document.addEventListener("DOMContentLoaded", () => {
         iniciarApp();
     }
 });
+
+
+/* =========================
+   CHAT
+========================= */
+
+const chatToggle = document.getElementById("chatToggle");
+const chatBox = document.getElementById("chatBox");
+const chatClose = document.getElementById("chatClose");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+
+// Abrir chat
+chatToggle.addEventListener("click", () => {
+    chatBox.classList.toggle("d-none");
+});
+
+// Cerrar chat
+chatClose.addEventListener("click", () => {
+    chatBox.classList.add("d-none");
+});
+
+// Enviar mensaje
+chatInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && chatInput.value.trim() !== "") {
+
+        const mensaje = chatInput.value;
+
+        // Usuario
+        chatMessages.innerHTML += `
+            <div class="msg-user"><b>Tú:</b> ${mensaje}</div>
+        `;
+
+        setTimeout(() => {
+            chatMessages.innerHTML += `
+                <div class="msg-bot"><b>Soporte:</b> Este chat es una prueba.</div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 500);
+
+        chatInput.value = "";
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
