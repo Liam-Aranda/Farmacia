@@ -18,6 +18,7 @@
 <!-- =========================
     CHAT
 ========================= -->
+
 <div id="chatContainer">
 
     <!-- Botón flotante -->
@@ -264,6 +265,19 @@
                                     <option value="precioDesc">Precio ↓</option>
                                 </select>
                             </div>
+                            <div class="col-md-2">
+                                <select id="tipoFiltro" class="form-control" required>
+                                    <option value="" disabled selected hidden>
+                                        Tipo
+                                    </option>
+                                    <option value="medicamento">
+                                        Medicamento
+                                    </option>
+                                    <option value="producto">
+                                        Producto
+                                    </option>
+                                </select>
+                            </div>
                         </div>
 
                         <button id="resetFiltros" class="btn btn-secondary">
@@ -279,6 +293,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nombre</th>
+                                <th>Tipo</th>
                                 <th>Precio</th>
                                 <th>Stock</th>
                             </tr>
@@ -314,6 +329,19 @@
                                 <div class="col-md-3">
                                     <input type="number" id="stock" class="form-control"
                                         placeholder="Stock" min="0" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <select id="tipo" class="form-control" required>
+                                        <option value="" disabled selected hidden>
+                                            Tipo
+                                        </option>
+                                        <option value="medicamento">
+                                            Medicamento
+                                        </option>
+                                        <option value="producto">
+                                            Producto
+                                        </option>
+                                    </select>
                                 </div>
                                 <div class="col-md-2 d-grid">
                                     <button class="btn btn-primary">Guardar</button>
@@ -357,6 +385,19 @@
                                     <option value="precioDesc">Precio ↓</option>
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <select id="tipoFiltro2" class="form-control" required>
+                                    <option value="" disabled selected hidden>
+                                        Tipo
+                                    </option>
+                                    <option value="medicamento">
+                                        Medicamento
+                                    </option>
+                                    <option value="producto">
+                                        Producto
+                                    </option>
+                                </select>
+                            </div>
                         </div>
 
                         <button id="resetFiltros2" class="btn btn-secondary">
@@ -376,6 +417,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nombre</th>
+                                        <th>Tipo</th>
                                         <th>Precio</th>
                                         <th>Stock</th>
                                         <th>Acciones</th>

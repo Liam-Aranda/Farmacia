@@ -1,6 +1,7 @@
 import { aplicarFiltrosGenerico } from "./filtros.js";
 
 const API = "http://localhost:3000/medicamentos";
+const API_PRODUCTOS = "http://localhost:3000/productos";
 const API_VENTAS = "http://localhost:3000/venta";
 const API_EMPLEADOS = "http://localhost:3000/empleados";
 
@@ -27,11 +28,38 @@ const resetSelect = (id) => {
 ========================= */
 
 async function fetchData() {
-    const res = await fetch(API);
-    return await res.json();
+
+    const [medicamentosRes, productosRes] = await Promise.all([
+        fetch(API),
+        fetch(API_PRODUCTOS)
+    ]);
+
+    const medicamentos = await medicamentosRes.json();
+    const productos = await productosRes.json();
+
+    // Agregar tipo automáticamente
+    const medsConTipo = medicamentos.map(m => ({
+        ...m,
+        tipo: "Medicamento",
+        endpoint: API
+    }));
+
+    const prodsConTipo = productos.map(p => ({
+        ...p,
+        tipo: "Producto",
+        endpoint: API_PRODUCTOS
+    }));
+
+    return [...medsConTipo, ...prodsConTipo];
 }
 
-async function crearProducto(data) {
+async function crearProducto(data, tipo) {
+
+    const API =
+        tipo === "medicamento"
+            ? API
+            : API_PRODUCTOS;
+
     await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,12 +67,15 @@ async function crearProducto(data) {
     });
 }
 
-async function eliminarProducto(id) {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
+async function eliminarProducto(id, endpoint) {
+    await fetch(`${endpoint}/${id}`, {
+        method: "DELETE"
+    });
 }
 
-async function actualizarProducto(id, data) {
-    await fetch(`${API}/${id}`, {
+async function actualizarProducto(id, data, endpoint) {
+
+    await fetch(`${endpoint}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -85,12 +116,13 @@ function renderTablaConsulta(data) {
     const tabla = document.getElementById("tablaConsulta");
     tabla.innerHTML = "";
 
-    data.forEach(({ id, nombre, precio, stock }) => {
+    data.forEach(({ id, nombre, tipo, precio, stock }) => {
         tabla.innerHTML += `
             <tr>
                 <td>${id}</td>
                 <td>${nombre}</td>
-                <td>${precio}</td>
+                <td>${tipo}</td>
+                <td>$${precio}</td>
                 <td>${stock}</td>
             </tr>
         `;
@@ -101,16 +133,17 @@ function renderTablaInventario(data) {
     const tabla = document.getElementById("tablaBody");
     tabla.innerHTML = "";
 
-    data.forEach(({ id, nombre, precio, stock }) => {
+    data.forEach(({ id, nombre, tipo, precio, stock, endpoint }) => {
         tabla.innerHTML += `
             <tr>
                 <td>${id}</td>
                 <td>${nombre}</td>
-                <td>${precio}</td>
+                <td>${tipo}</td>
+                <td>$${precio}</td>
                 <td>${stock}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" onclick="eliminar(${id})">Eliminar</button>
-                    <button class="btn btn-warning btn-sm" onclick="editarFila(this, ${id})">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="eliminar(${id}, '${endpoint}')">Eliminar</button>
+                    <button class="btn btn-warning btn-sm" onclick="editarFila(this, ${id}, '${endpoint}')">Editar</button>
                 </td>
             </tr>
         `;
@@ -167,13 +200,15 @@ async function cargarEmpleados() {
 document.getElementById("formProducto").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const tipo = getValue("tipo");
+
     const nuevoProducto = {
         nombre: getValue("nombre"),
         precio: getValue("precio"),
         stock: getValue("stock")
     };
 
-    await crearProducto(nuevoProducto);
+    await crearProducto(nuevoProducto, tipo);
 
     e.target.reset();
     cargarProductosVenta()
@@ -181,14 +216,14 @@ document.getElementById("formProducto").addEventListener("submit", async (e) => 
     cargarConsulta();
 });
 
-async function eliminar(id) {
-    await eliminarProducto(id);
+async function eliminar(id, endpoint) {
+    await eliminarProducto(id, endpoint);
     cargarProductosVenta()
     cargarDatos();
     cargarConsulta();
 }
 
-function editarFila(boton, id) {
+function editarFila(boton, id, endpoint) {
     const fila = boton.closest("tr");
     const celdas = fila.children;
 
@@ -199,12 +234,12 @@ function editarFila(boton, id) {
     celdas[3].innerHTML = `<input class="form-control" type="number" min="0" value="${stock}">`;
 
     celdas[4].innerHTML = `
-        <button class="btn btn-success btn-sm" onclick="guardar(${id}, this)">Guardar</button>
+        <button class="btn btn-success btn-sm" onclick="guardar(${id}, this, '${endpoint}')">Guardar</button>
         <button class="btn btn-secondary btn-sm" onclick="cargarDatos()">Cancelar</button>
     `;
 }
 
-async function guardar(id, boton) {
+async function guardar(id, boton, endpoint) {
     const fila = boton.closest("tr");
     const inputs = fila.querySelectorAll("input");
 
@@ -214,7 +249,7 @@ async function guardar(id, boton) {
         stock: inputs[2].value
     };
 
-    await actualizarProducto(id, data);
+    await actualizarProducto(id, data, endpoint);
 
     cargarDatos();
     cargarConsulta();
@@ -227,6 +262,7 @@ function obtenerConfig(ids) {
         precioMin: getValue(ids.precioMin),
         precioMax: getValue(ids.precioMax),
         stockFiltro: getValue(ids.stockFiltro),
+        tipoFiltro: getValue(ids.tipoFiltro),
         ordenar: getValue(ids.ordenar)
     };
 }
@@ -237,6 +273,7 @@ function aplicarFiltros() {
         precioMin: "precioMin",
         precioMax: "precioMax",
         stockFiltro: "stockFiltro",
+        tipoFiltro: "tipoFiltro",
         ordenar: "ordenar"
     });
 
@@ -250,6 +287,7 @@ function aplicarFiltrosTabla2() {
         precioMin: "precioMin2",
         precioMax: "precioMax2",
         stockFiltro: "stockFiltro2",
+        tipoFiltro: "tipoFiltro2",
         ordenar: "ordenar2"
     });
 
@@ -333,7 +371,7 @@ function asignarEventos() {
         document.getElementById(id).addEventListener("input", aplicarFiltros)
     );
 
-    ["stockFiltro", "ordenar"].forEach(id =>
+    ["stockFiltro", "tipoFiltro", "ordenar"].forEach(id =>
         document.getElementById(id).addEventListener("change", aplicarFiltros)
     );
 
@@ -342,7 +380,7 @@ function asignarEventos() {
         document.getElementById(id).addEventListener("input", aplicarFiltrosTabla2)
     );
 
-    ["stockFiltro2", "ordenar2"].forEach(id =>
+    ["stockFiltro2", "tipoFiltro2", "ordenar2"].forEach(id =>
         document.getElementById(id).addEventListener("change", aplicarFiltrosTabla2)
     );
 
@@ -538,6 +576,7 @@ window.agregarAlCarrito = function(producto) {
     } else {
         carrito.push({
             id: producto.id,
+            tipo: producto.tipo,
             nombre: producto.nombre,
             precio: producto.precio,
             cantidad: 1,
@@ -728,7 +767,6 @@ document.addEventListener("DOMContentLoaded", () => {
         iniciarApp();
     }
 });
-
 
 /* =========================
    CHAT
